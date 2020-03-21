@@ -16,7 +16,7 @@ type ApiClient struct {
 	Admin       bool   `json:"admin"`
 	Validator   bool   `json:"validator"`
 	Certificate string `json:"certificate,omitempty"`
-	PublicKey   tstring `json:"public_key,omitempty"`
+	PublicKey   string `json:"public_key,omitempty"`
 	PrivateKey  string `json:"private_key,omitempty"`
 	Uri         string `json:"uri,omitempty"`
 	JsonClass   string `json:"json_class"`
@@ -38,7 +38,7 @@ type ApiClientCreateResult struct {
 		Name string `json:"Name,omitempty"`
 		PrivateKey string `json:"private_key,omitempty"`
 		PublicKey string `json:"private_key,omitempty"`
-        }
+        } `json:"chef_key,omitempty"`
 }
 
 // TODO this should probably be ???

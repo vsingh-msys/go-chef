@@ -17,35 +17,38 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Println("List initial clients", clientList)
+	fmt.Printf("List initial clients %+v\n", clientList)
 
-	// Define an Client object
-	client1 := chef.ApiNewClient("client1")
-	fmt.Println("Define client1", client1)
+	// Define a Client object
+	client1 := chef.ApiNewClient{
+		Name: "client1",
+		CreateKey: true,
+	}
+	fmt.Printf("Define client1 %+v\n", client1)
 
 	// Delete client1 ignoring errors :)
 	err = client.Clients.Delete(client1.Name)
 
 	// Create
-	clientResult, err := client.Clients.Post(client1)
+	clientResult, err := client.Clients.Create(client1)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't create client client1. ", err)
 	}
-	fmt.Println("Added client1", clientResult)
+	fmt.Printf("Added client1 %+v\n", clientResult)
 
 	// List clients
 	clientList, err = client.Clients.List()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Println("List clients after adding client1", clientList)
+	fmt.Printf("List clients after adding client1 %+v\n", clientList)
 
 	// Create a second time
-	clientResult, err = client.Clients.Post(client1)
+	clientResult, err = client.Clients.Create(client1)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't recreate client client1. ", err)
 	}
-	fmt.Println("Added client1", clientResult)
+	fmt.Printf("Added client1 %+v\n", clientResult)
 
 	// Read client1 information
 	serverClient, err := client.Clients.Get("client1")
@@ -56,11 +59,11 @@ func main() {
 
 	// update client
 	// TODO - update something about the client
-	updateClient, err := client.Clients.Put(client1)
+	updateClient, err := client.Clients.Update("client1", client1)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't update client: ", err)
 	}
-	fmt.Println("Update client1", updateClient)
+	fmt.Printf("Update client1 %+v\n", updateClient)
 
 	// Info after update
 	serverClient, err = client.Clients.Get("client1")
@@ -71,12 +74,12 @@ func main() {
 
 	// Delete client ignoring errors :)
 	err = client.Clients.Delete(client1.Name)
-	fmt.Println("Delete client1", err)
+	fmt.Printf("Delete client1 %+v\n", err)
 
 	// List clients
 	clientList, err = client.Clients.List()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Println("List clients after cleanup", clientList)
+	fmt.Printf("List clients after cleanup %+v\n", clientList)
 }
