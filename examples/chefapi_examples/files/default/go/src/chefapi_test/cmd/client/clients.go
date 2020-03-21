@@ -19,8 +19,8 @@ func main() {
 	}
 	fmt.Println("List initial clients", clientList)
 
-	// Define a Client object
-	client1 := chef.NewClient("client1")
+	// Define an Client object
+	client1 := chef.ApiNewClient("client1")
 	fmt.Println("Define client1", client1)
 
 	// Delete client1 ignoring errors :)

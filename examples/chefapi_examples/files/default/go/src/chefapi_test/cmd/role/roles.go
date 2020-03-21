@@ -20,7 +20,7 @@ func main() {
 	fmt.Println("List initial roles", roleList)
 
 	// Define a Role object
-	role1 := chef.NewRole("role1")
+	role1 := chef.Role("role1")
 	// TODO- add something to the role
 	role1.RunList = []string{"pwn"}
 	fmt.Println("Define role1", role1)

@@ -20,7 +20,7 @@ func main() {
 	fmt.Println("List initial environments", environmentList)
 
 	// Define a Environment object
-	environment1 := chef.NewEnvironment("environment1")
+	environment1 := chef.Environment("environment1")
 	// TODO set somthing
 	fmt.Println("Define environment1", environment1)
 
