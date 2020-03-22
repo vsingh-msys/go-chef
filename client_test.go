@@ -78,14 +78,14 @@ func TestClientsService_Create(t *testing.T) {
 
 	want := &ApiClientCreateResult{
 		Uri: "http://localhost/clients/client",
-			ChefKey: ChefKey{
-				Name: "default",
-				ExpirationDate: "infinity",
-		        	Uri: "http://localhost/clients/client/keys/default",
-				PrivateKey: "-----BEGIN PRIVATE KEY-----",
-				PublicKey: "-----BEGIN PUBLIC KEY-----",
-			},
-		}
+		ChefKey: ChefKey{
+			Name:           "default",
+			ExpirationDate: "infinity",
+			Uri:            "http://localhost/clients/client/keys/default",
+			PrivateKey:     "-----BEGIN PRIVATE KEY-----",
+			PublicKey:      "-----BEGIN PUBLIC KEY-----",
+		},
+	}
 	if !reflect.DeepEqual(response, want) {
 		t.Errorf("Clients.Create returned %+v, want %+v", response, want)
 	}

@@ -8,30 +8,30 @@ type ApiClientService struct {
 
 // ApiClient represents the native Go version of the deserialized Client type
 // TODO: Doubt very many of these fields are there now, not in the doc
-// 
+//
 type ApiClient struct {
-	Name        string `json:"name"`
-	ClientName  string `json:"clientname"`
-	OrgName     string `json:"orgname"`
-	Validator   bool   `json:"validator"`
-	Uri         string `json:"uri,omitempty"`
-	JsonClass   string `json:"json_class"`
-	ChefType    string `json:"chef_type"`
+	Name       string `json:"name"`
+	ClientName string `json:"clientname"`
+	OrgName    string `json:"orgname"`
+	Validator  bool   `json:"validator"`
+	Uri        string `json:"uri,omitempty"`
+	JsonClass  string `json:"json_class"`
+	ChefType   string `json:"chef_type"`
 }
 
 // ApiNewClient structure to request a new client
 type ApiNewClient struct {
-	Name  string `json:"name"`
-	ClientName  string `json:"clientname,omitempty"`
-	Validator   bool   `json:"validator,omitempty"`
-	Admin bool   `json:"admin,omitempty"`  // not supported and ignored as of 12.1.0
-	CreateKey bool `json:"create_key,omitempty"`
+	Name       string `json:"name"`
+	ClientName string `json:"clientname,omitempty"`
+	Validator  bool   `json:"validator,omitempty"`
+	Admin      bool   `json:"admin,omitempty"` // not supported and ignored as of 12.1.0
+	CreateKey  bool   `json:"create_key,omitempty"`
 }
 
 // ApiNewClientresult
 type ApiClientCreateResult struct {
-	Uri        string `json:"uri,omitempty"`
-	ChefKey    ChefKey `json:"chef_key,omitempty"`
+	Uri     string  `json:"uri,omitempty"`
+	ChefKey ChefKey `json:"chef_key,omitempty"`
 }
 
 // TODO this should probably be ???
