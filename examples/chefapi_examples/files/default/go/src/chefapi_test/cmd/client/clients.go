@@ -59,6 +59,10 @@ func main() {
 
 	// update client
 	// TODO - update something about the client
+	client1 = chef.ApiNewClient{
+		Name: "client1",
+		ClientName: "clientchanged",
+	}
 	updateClient, err := client.Clients.Update("client1", client1)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't update client: ", err)

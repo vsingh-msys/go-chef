@@ -104,12 +104,13 @@ func (e *ApiClientService) Get(name string) (client ApiClient, err error) {
 // TODO: Doc says 200, probably a 201
 // TODO: Add a go test
 // TODO: Update the other go tests
-func (e *ApiClientService) Update(clientName string, client ApiNewClient) (data *ApiClientCreateResult, err error) {
+func (e *ApiClientService) Update(name string, client ApiNewClient) (data *ApiClientCreateResult, err error) {
 	body, err := JSONReader(client)
+	url := fmt.Sprintf("clients/%s", name)
 	if err != nil {
 		return
 	}
-	err = e.client.magicRequestDecoder("PUT", "clients/"+clientName, body, &data)
+	err = e.client.magicRequestDecoder("PUT", url, body, &data)
 	return
 }
 
@@ -121,6 +122,13 @@ func (e *ApiClientService) ListKeys(clientName string) (data *ApiClientKeyListRe
 	err = e.client.magicRequestDecoder("GET", url, nil, &data)
 	return
 }
+
+// POST /client/CLIENT/keys TODO
+
+// DELETE /client/CLIENT/keys TODO
+// TODO fix the orger of the client/keys doc in chef api
+
+// PUT /client/CLIENT/keys TODO
 
 // GetKey gets a client key from the Chef server.
 //
