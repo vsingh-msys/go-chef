@@ -42,7 +42,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Couldn't create client client1. ", err)
 	}
 	fmt.Printf("Added client1 %+v\n", clientResult)
-	clientResult, err := client.Clients.Create(client2)
+	clientResult, err = client.Clients.Create(client2)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't create client client2. ", err)
 	}
@@ -69,7 +69,7 @@ func main() {
 	}
 	fmt.Printf("Get client1 %+v\n", serverClient)
 
-	serverClient, err := client.Clients.Get("client2")
+	serverClient, err = client.Clients.Get("client2")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't get client2: ", err)
 	}
@@ -91,7 +91,7 @@ func main() {
 	client2 = chef.ApiNewClient{
 		Validator: false,
 	}
-	updateClient, err := client.Clients.Update("client2", client1)
+	updateClient, err = client.Clients.Update("client2", client1)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't update client: ", err)
 	}

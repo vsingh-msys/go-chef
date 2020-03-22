@@ -26,7 +26,7 @@ type ApiNewClient struct {
 	Validator  bool   `json:"validator,omitempty"`
 	Admin      bool   `json:"admin,omitempty"` // not supported and ignored as of 12.1.0
 	CreateKey  bool   `json:"create_key,omitempty"`
-	PublicKey  bool   `json:"public_key,omitempty"`
+	PublicKey  string `json:"public_key,omitempty"`
 }
 
 // ApiNewClientresult
