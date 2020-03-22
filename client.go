@@ -85,7 +85,8 @@ func (e *ApiClientService) Create(client ApiNewClient) (data *ApiClientCreateRes
 // Chef API docs: https://docs.chef.io/api_chef_server.html#clients-name
 // TODO doc says name and validator flag are returned
 func (e *ApiClientService) Delete(name string) (err error) {
-	err = e.client.magicRequestDecoder("DELETE", "clients/"+name, nil, nil)
+	url := fmt.Sprintf("clients/%s", name)
+	err = e.client.magicRequestDecoder("DELETE", url, nil, nil)
 	return
 }
 

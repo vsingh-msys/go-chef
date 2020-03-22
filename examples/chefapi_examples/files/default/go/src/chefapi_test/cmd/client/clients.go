@@ -27,7 +27,7 @@ func main() {
 	fmt.Printf("Define client1 %+v\n", client1)
 
 	// Delete client1 ignoring errors :)
-	err = client.Clients.Delete(client1.Name)
+	err = client.Clients.Delete("client1")
 
 	// Create
 	clientResult, err := client.Clients.Create(client1)
@@ -62,6 +62,7 @@ func main() {
 	client1 = chef.ApiNewClient{
 		Name: "client1",
 		ClientName: "clientchanged",
+		Validator: true,
 	}
 	updateClient, err := client.Clients.Update("client1", client1)
 	if err != nil {
@@ -77,7 +78,7 @@ func main() {
 	fmt.Printf("Get client1 after update %+v\n", serverClient)
 
 	// Delete client ignoring errors :)
-	err = client.Clients.Delete(client1.Name)
+	err = client.Clients.Delete("client1")
 	fmt.Printf("Delete client1 %+v\n", err)
 
 	// List clients
