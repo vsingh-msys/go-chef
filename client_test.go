@@ -54,40 +54,38 @@ func TestClientsService_List(t *testing.T) {
 	}
 }
 
-func TestClientsService_Get(t *testing.T) {
-	setup()
-	defer teardown()
-
-	mux.HandleFunc("/clients/client1", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{
-      "clientname": "client1",
-      "orgname": "org_name",
-      "validator": false,
-      "certificate": "-----BEGIN CERTIFICATE-----",
-      "name": "node_name"
-    }`)
-	})
-
-	_, err := client.Clients.Get("client1")
-	if err != nil {
-		t.Errorf("Clients.Get returned error: %v", err)
-	}
-}
-
 func TestClientsService_Create(t *testing.T) {
 	setup()
 	defer teardown()
 
 	mux.HandleFunc("/clients", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{"uri": "http://localhost/clients/client", "private_key": "-----BEGIN PRIVATE KEY-----"}`)
+		fmt.Fprintf(w, `{"uri": "http://localhost/clients/client", 
+		"chef_key": {
+		  "name": "default",
+		  "expiration_date": "infinity",
+		  "uri": "http://localhost/clients/client/keys/default",
+		  "public_key": "-----BEGIN PUBLIC KEY-----",
+		  "private_key": "-----BEGIN PRIVATE KEY-----"
+	        }
+	  }`)
 	})
 
-	response, err := client.Clients.Create("client", false)
+	newclient := ApiNewClient{Name: "client"}
+	response, err := client.Clients.Create(newclient)
 	if err != nil {
 		t.Errorf("Clients.Create returned error: %v", err)
 	}
 
-	want := &ApiClientCreateResult{Uri: "http://localhost/clients/client", PrivateKey: "-----BEGIN PRIVATE KEY-----"}
+	want := &ApiClientCreateResult{
+		Uri: "http://localhost/clients/client",
+			ChefKey: ChefKey{
+				Name: "default",
+				ExpirationDate: "infinity",
+		        	Uri: "http://localhost/clients/client/keys/default",
+				PrivateKey: "-----BEGIN PRIVATE KEY-----",
+				PublicKey: "-----BEGIN PUBLIC KEY-----",
+			},
+		}
 	if !reflect.DeepEqual(response, want) {
 		t.Errorf("Clients.Create returned %+v, want %+v", response, want)
 	}
@@ -105,6 +103,31 @@ func TestClientsService_Delete(t *testing.T) {
 	if err != nil {
 		t.Errorf("Clients.Delete returned error: %v", err)
 	}
+}
+
+func TestClientsService_Get(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/clients/client1", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{
+      "name": "node_name",
+      "clientname": "client1",
+      "validator": false,
+      "orgname": "org_name",
+      "json_class": "Chef::ApiClient",
+      "chef_type": "client"
+    }`)
+	})
+
+	_, err := client.Clients.Get("client1")
+	if err != nil {
+		t.Errorf("Clients.Get returned error: %v", err)
+	}
+}
+
+func TestClientsService_Update(t *testing.T) {
+	// TODO  write the test
 }
 
 func TestClientsService_ListKeys(t *testing.T) {

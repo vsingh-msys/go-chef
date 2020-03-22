@@ -34,11 +34,7 @@ type ApiNewClient struct {
 type ApiClientCreateResult struct {
 	Uri        string `json:"uri,omitempty"`
 	// Use the structure from the keys definition
-	ChefKey    struct {
-		Name string `json:"Name,omitempty"`
-		PrivateKey string `json:"private_key,omitempty"`
-		PublicKey string `json:"private_key,omitempty"`
-        } `json:"chef_key,omitempty"`
+	ChefKey    ChefKey `json:"chef_key,omitempty"`
 }
 
 // TODO this should probably be ???
