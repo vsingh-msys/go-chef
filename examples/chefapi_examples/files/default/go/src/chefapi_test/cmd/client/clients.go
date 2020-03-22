@@ -29,12 +29,11 @@ func main() {
 
 	// Define another Client object
 	client2 := chef.ApiNewClient{
-		Name: "client1",
+		ClientName: "client2",
 		CreateKey: false,
 		Validator: true,
-		PublicKey: "----- BEGIN FAKE PUBLIC KEY -----",
 	}
-	fmt.Printf("Define client2 %+v\n", client1)
+	fmt.Printf("Define client2 %+v\n", client2)
 
 	// Create
 	clientResult, err := client.Clients.Create(client1)
@@ -42,11 +41,12 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Couldn't create client client1. ", err)
 	}
 	fmt.Printf("Added client1 %+v\n", clientResult)
+
 	clientResult, err = client.Clients.Create(client2)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't create client client2. ", err)
 	}
-	fmt.Printf("Added client1 %+v\n", clientResult)
+	fmt.Printf("Added client2 %+v\n", clientResult)
 
 	// List clients
 	clientList, err = client.Clients.List()

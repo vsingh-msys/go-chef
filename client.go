@@ -7,12 +7,11 @@ type ApiClientService struct {
 }
 
 // ApiClient represents the native Go version of the deserialized Client type
-// TODO: Doubt very many of these fields are there now, not in the doc
 //
 type ApiClient struct {
 	Name       string `json:"name"`
 	ClientName string `json:"clientname"`
-	OrgName    string `json:"orgname"`
+	OrgName    string `json:"orgname"`  // not returned after update
 	Validator  bool   `json:"validator"`
 	Uri        string `json:"uri,omitempty"`
 	JsonClass  string `json:"json_class"`
@@ -21,7 +20,7 @@ type ApiClient struct {
 
 // ApiNewClient structure to request a new client
 type ApiNewClient struct {
-	Name       string `json:"name"`
+	Name       string `json:"name,omitempty"`// name or clientname must be specified to create a client
 	ClientName string `json:"clientname,omitempty"`
 	Validator  bool   `json:"validator,omitempty"`
 	Admin      bool   `json:"admin,omitempty"` // not supported and ignored as of 12.1.0
@@ -105,7 +104,7 @@ func (e *ApiClientService) Get(name string) (client ApiClient, err error) {
 // Chef API docs: https://docs.chef.io/api_chef_server.html#clients-name
 // TODO: Add a go test
 // TODO: Update the other go tests
-func (e *ApiClientService) Update(name string, client ApiNewClient) (data *ApiClientCreateResult, err error) {
+func (e *ApiClientService) Update(name string, client ApiNewClient) (data *ApiClient, err error) {
 	body, err := JSONReader(client)
 	url := fmt.Sprintf("clients/%s", name)
 	if err != nil {
