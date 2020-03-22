@@ -13,11 +13,7 @@ type ApiClient struct {
 	Name        string `json:"name"`
 	ClientName  string `json:"clientname"`
 	OrgName     string `json:"orgname"`
-	Admin       bool   `json:"admin"`
 	Validator   bool   `json:"validator"`
-	Certificate string `json:"certificate,omitempty"`
-	PublicKey   string `json:"public_key,omitempty"`
-	PrivateKey  string `json:"private_key,omitempty"`
 	Uri         string `json:"uri,omitempty"`
 	JsonClass   string `json:"json_class"`
 	ChefType    string `json:"chef_type"`
@@ -26,14 +22,15 @@ type ApiClient struct {
 // ApiNewClient structure to request a new client
 type ApiNewClient struct {
 	Name  string `json:"name"`
-	Admin bool   `json:"admin"`  // not supported and ignored as of 12.1.0
-	CreateKey bool `json:"create_key"`
+	ClientName  string `json:"clientname,omitempty"`
+	Validator   bool   `json:"validator,omitempty"`
+	Admin bool   `json:"admin,omitempty"`  // not supported and ignored as of 12.1.0
+	CreateKey bool `json:"create_key,omitempty"`
 }
 
-// ApiNewClient Client result
+// ApiNewClientresult
 type ApiClientCreateResult struct {
 	Uri        string `json:"uri,omitempty"`
-	// Use the structure from the keys definition
 	ChefKey    ChefKey `json:"chef_key,omitempty"`
 }
 
