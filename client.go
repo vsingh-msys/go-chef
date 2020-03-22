@@ -26,6 +26,7 @@ type ApiNewClient struct {
 	Validator  bool   `json:"validator,omitempty"`
 	Admin      bool   `json:"admin,omitempty"` // not supported and ignored as of 12.1.0
 	CreateKey  bool   `json:"create_key,omitempty"`
+	PublicKey  bool   `json:"public_key,omitempty"`
 }
 
 // ApiNewClientresult
@@ -102,7 +103,6 @@ func (e *ApiClientService) Get(name string) (client ApiClient, err error) {
 // Put updates a client on the Chef server.
 //
 // Chef API docs: https://docs.chef.io/api_chef_server.html#clients-name
-// TODO: Doc says 200, probably a 201
 // TODO: Add a go test
 // TODO: Update the other go tests
 func (e *ApiClientService) Update(name string, client ApiNewClient) (data *ApiClientCreateResult, err error) {
