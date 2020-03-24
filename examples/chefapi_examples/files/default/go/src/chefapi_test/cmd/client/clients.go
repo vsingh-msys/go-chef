@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-
+	"strings"
 	"chefapi_test/testapi"
 	"github.com/go-chef/chef"
 )
@@ -17,7 +17,7 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Printf("List initial clients %+v\n", clientList)
+	fmt.Printf("List initial clients %+v\n", strings.ReplaceAll(clientList, "\n", " "))
 
 	// Define a Client object
 	client1 := chef.ApiNewClient{
@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Printf("List clients after adding %+v\n", clientList)
+	fmt.Printf("List clients after adding %+v\n", strings.ReplaceAll(clientList, "\n", " "))
 
 	// Create a second time expect 409
 	clientResult, err = client.Clients.Create(client1)
@@ -115,5 +115,5 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't list clients: ", err)
 	}
-	fmt.Printf("List clients after cleanup %+v\n", clientList)
+	fmt.Printf("List clients after cleanup %+v\n", strings.ReplaceAll(clientList, "\n", " "))
 }
