@@ -4,16 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"reflect"
 	"testing"
+	"github.com/r3labs/diff"
 )
-
-const clientKeyListResponseFile = "test/client_keys_response.json"
-const clientKeyTestFile = "test/client_key.json"
 
 var (
 	testClientJSON = "test/client.json"
@@ -130,48 +127,164 @@ func TestClientsService_Update(t *testing.T) {
 	// TODO  write the test
 }
 
-func TestClientsService_ListKeys(t *testing.T) {
+
+func TestCListKeys(t *testing.T) {
 	setup()
 	defer teardown()
 
-	file, err := ioutil.ReadFile(clientKeyListResponseFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	mux.HandleFunc("/clients/client1/keys", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, string(file))
+		switch {
+		case r.Method == "GET":
+			fmt.Fprintf(w, `[
+			       {
+				       "name": "default",
+                                	"uri": "https://chefserver/clients/client1/keys/default",
+                                	"expired": false
+                         	}
+		 	]`)
+		}
 	})
 
-	keys, err := client.Clients.ListKeys("client1")
+	keyresult, err := client.Clients.ListKeys("client1")
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("Clients.ListKeys returned error: %v", err)
 	}
-
-	if len(*keys) != 2 {
-		t.Error("expected len(keys) to be 2")
+	defaultItem := KeyItem{
+		KeyName: "default",
+		Uri:     "https://chefserver/clients/client1/keys/default",
+		Expired: false,
+	}
+	Want := []KeyItem{defaultItem}
+	if !reflect.DeepEqual(keyresult, Want) {
+		t.Errorf("Clients.ListKeys returned %+v, want %+v", keyresult, Want)
 	}
 }
 
-func TestClientsService_GetKey(t *testing.T) {
+func TestCAddKey(t *testing.T) {
 	setup()
 	defer teardown()
 
-	file, err := ioutil.ReadFile(clientKeyTestFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	mux.HandleFunc("/clients/client1/keys/default", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, string(file))
+	mux.HandleFunc("/clients/client1/keys", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "POST":
+			fmt.Fprintf(w, `{
+             			        "name": "newkey",
+                                	"uri": "https://chefserver/clients/client1/keys/newkey",
+                                	"expired": false
+                         	}`)
+		}
 	})
 
-	key, err := client.Clients.GetKey("client1", "default")
-	if err != nil {
-		t.Fatal(err)
+	keyadd := AccessKey{
+		KeyName:        "newkey",
+		PublicKey:      "RSA KEY",
+		ExpirationDate: "infinity",
 	}
+	keyresult, err := client.Clients.AddKey("client1", keyadd)
+	if err != nil {
+		t.Errorf("Clients.AddKey returned error: %v", err)
+	}
+	Want := KeyItem{
+		KeyName: "newkey",
+		Uri:     "https://chefserver/clients/client1/keys/newkey",
+		Expired: false,
+	}
+	if !reflect.DeepEqual(keyresult, Want) {
+		t.Errorf("Clients.AddKey returned %+v, want %+v", keyresult, Want)
+	}
+}
 
-	if key.PublicKey != "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----" {
-		t.Error("expected key.PublicKey to match fixture")
+func TestCDeleteKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/clients/client1/keys/newkey", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "DELETE":
+			fmt.Fprintf(w, `{
+             			        "name": "newkey",
+                                	"public_key": "RSA KEY",
+                                	"expiration_date": "infinity"
+                         	}`)
+		}
+	})
+
+	keyresult, err := client.Clients.DeleteKey("client1", "newkey")
+	if err != nil {
+		t.Errorf("Clients.DeleteKey returned error: %v", err)
+	}
+	Want := AccessKey{
+		KeyName:        "newkey",
+		PublicKey:      "RSA KEY",
+		ExpirationDate: "infinity",
+	}
+	if !reflect.DeepEqual(keyresult, Want) {
+		diff, _ := diff.Diff(keyresult, Want)
+		t.Errorf("Clients.DeleteKey returned %+v, want %+v, differences %+v", keyresult, Want, diff)
+	}
+}
+
+func TestCGetKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/clients/client1/keys/newkey", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "GET":
+			fmt.Fprintf(w, `{
+             			        "name": "newkey",
+                                	"public_key": "RSA KEY",
+                                	"expiration_date": "infinity"
+                         	}`)
+		}
+	})
+
+	keyresult, err := client.Clients.GetKey("client1", "newkey")
+	if err != nil {
+		t.Errorf("Clients.GetKey returned error: %v", err)
+	}
+	Want := AccessKey{
+		KeyName:        "newkey",
+		PublicKey:      "RSA KEY",
+		ExpirationDate: "infinity",
+	}
+	if !reflect.DeepEqual(keyresult, Want) {
+		diff, _ := diff.Diff(keyresult, Want)
+		t.Errorf("Clients.GetKey returned %+v, want %+v, differences %+v", keyresult, Want, diff)
+	}
+}
+
+func TestCUpdateKey(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/clients/client1/keys/newkey", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "PUT":
+			fmt.Fprintf(w, `{
+             			        "name": "newkey",
+                                	"public_key": "RSA NEW KEY",
+                                	"expiration_date": "infinity"
+                         	}`)
+		}
+	})
+
+	updkey := AccessKey{
+		KeyName:        "newkey",
+		PublicKey:      "RSA NEW KEY",
+		ExpirationDate: "infinity",
+	}
+	keyresult, err := client.Clients.UpdateKey("client1", "newkey", updkey)
+	if err != nil {
+		t.Errorf("Clients.UpdateKey returned error: %v", err)
+	}
+	Want := AccessKey{
+		KeyName:        "newkey",
+		PublicKey:      "RSA NEW KEY",
+		ExpirationDate: "infinity",
+	}
+	if !reflect.DeepEqual(keyresult, Want) {
+		diff, _ := diff.Diff(keyresult, Want)
+		t.Errorf("Clients.UpdateKey returned %+v, want %+v, differences %+v", keyresult, Want, diff)
 	}
 }

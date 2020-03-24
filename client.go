@@ -11,7 +11,7 @@ type ApiClientService struct {
 type ApiClient struct {
 	Name       string `json:"name"`
 	ClientName string `json:"clientname"`
-	OrgName    string `json:"orgname"`  // not returned after update
+	OrgName    string `json:"orgname"` // not returned after update
 	Validator  bool   `json:"validator"`
 	Uri        string `json:"uri,omitempty"`
 	JsonClass  string `json:"json_class"`
@@ -20,12 +20,11 @@ type ApiClient struct {
 
 // ApiNewClient structure to request a new client
 type ApiNewClient struct {
-	Name       string `json:"name,omitempty"`// name or clientname must be specified to create a client
+	Name       string `json:"name,omitempty"` // name or clientname must be specified to create a client
 	ClientName string `json:"clientname,omitempty"`
 	Validator  bool   `json:"validator,omitempty"`
 	Admin      bool   `json:"admin,omitempty"` // not supported and ignored as of 12.1.0
 	CreateKey  bool   `json:"create_key,omitempty"`
-	PublicKey  string `json:"public_key,omitempty"`
 }
 
 // ApiNewClientresult
@@ -36,19 +35,6 @@ type ApiClientCreateResult struct {
 
 // TODO this should probably be ???
 type ApiClientListResult map[string]string
-
-type ApiClientKey struct {
-	Name           string `json:"name"`
-	PublicKey      string `json:"public_key"`
-	ExpirationDate string `json:"expiration_date"`
-}
-
-type ApiClientKeyListResultItem struct {
-	Name    string `json:"name"`
-	Expired bool   `json:"expired"`
-}
-
-type ApiClientKeyListResult []ApiClientKeyListResultItem
 
 // String makes ApiClientListResult implement the string result
 func (c ApiClientListResult) String() (out string) {
@@ -117,24 +103,62 @@ func (e *ApiClientService) Update(name string, client ApiNewClient) (data *ApiCl
 // ListKeys lists the keys associated with a client on the Chef server.
 //
 // Chef API docs: https://docs.chef.io/api_chef_server.html#clients-client-keys
-func (e *ApiClientService) ListKeys(clientName string) (data *ApiClientKeyListResult, err error) {
-	url := fmt.Sprintf("clients/%s/keys", clientName)
+func (e *ApiClientService) ListKeys(name string) (data []KeyItem, err error) {
+	url := fmt.Sprintf("clients/%s/keys", name)
 	err = e.client.magicRequestDecoder("GET", url, nil, &data)
 	return
 }
 
-// POST /client/CLIENT/keys TODO
+// AddKey add a key for a client on the Chef server.
+// /clients/USERNAME/keys POST
+// 201 - created
+// 401 - not authenticated
+// 403 - not authorizated
+// 404 - client doesn't exist
+// 409 - new name is already in use
+//
+// Chef API docs: https://docs.chef.io/api_chef_server.html#clients-name
+func (e *ApiClientService) AddKey(name string, keyadd AccessKey) (key KeyItem, err error) {
+	url := fmt.Sprintf("clients/%s/keys", name)
+	body, err := JSONReader(keyadd)
+	err = e.client.magicRequestDecoder("POST", url, body, &key)
+	return
+}
 
-// DELETE /client/CLIENT/keys TODO
-// TODO fix the orger of the client/keys doc in chef api
-
-// PUT /client/CLIENT/keys TODO
+// DeleteKey delete a key for a client.
+// /clients/USERNAME/keys/KEYNAME DELETE
+// 200 - successful
+// 401 - not authenticated
+// 403 - not authorizated
+// 404 - client doesn't exist
+//
+// Chef API docs: https://docs.chef.io/api_chef_server/#clientskeys
+func (e *ApiClientService) DeleteKey(name string, keyname string) (key AccessKey, err error) {
+	url := fmt.Sprintf("clients/%s/keys/%s", name, keyname)
+	err = e.client.magicRequestDecoder("DELETE", url, nil, &key)
+	return
+}
 
 // GetKey gets a client key from the Chef server.
 //
 // Chef API docs: https://docs.chef.io/api_chef_server.html#clients-client-keys-key
-func (e *ApiClientService) GetKey(clientName string, keyName string) (data *ApiClientKey, err error) {
-	url := fmt.Sprintf("clients/%s/keys/%s", clientName, keyName)
-	err = e.client.magicRequestDecoder("GET", url, nil, &data)
+func (e *ApiClientService) GetKey(name string, keyname string) (key AccessKey, err error) {
+	url := fmt.Sprintf("clients/%s/keys/%s", name, keyname)
+	err = e.client.magicRequestDecoder("GET", url, nil, &key)
+	return
+}
+
+// UpdateKey updates a key for a client.
+// /clients/USERNAME/keys/KEYNAME PUT
+// 200 - successful
+// 401 - not authenticated
+// 403 - not authorizated
+// 404 - client doesn't exist
+//
+// Chef API docs: https://docs.chef.io/api_chef_server/#clientskeys
+func (e *ApiClientService) UpdateKey(name string, keyname string, keyupd AccessKey) (key AccessKey, err error) {
+	url := fmt.Sprintf("clients/%s/keys/%s", name, keyname)
+	body, err := JSONReader(keyupd)
+	err = e.client.magicRequestDecoder("PUT", url, body, &key)
 	return
 }

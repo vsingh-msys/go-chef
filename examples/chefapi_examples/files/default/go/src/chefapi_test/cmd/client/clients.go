@@ -91,7 +91,7 @@ func main() {
 	client2 = chef.ApiNewClient{
 		Validator: false,
 	}
-	updateClient, err = client.Clients.Update("client2", client1)
+	updateClient, err = client.Clients.Update("client2", client2)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Couldn't update client: ", err)
 	}
